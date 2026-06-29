@@ -8,7 +8,6 @@ import os
 import threading
 import io
 
-# ── Tesseract path (Windows only — change if needed) ──────────────────────────
 try:
     import pytesseract
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -22,7 +21,7 @@ try:
 except ImportError:
     REMBG_OK = False
 
-# ── Theme ──────────────────────────────────────────────────────────────────────
+#theme
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
@@ -35,7 +34,6 @@ BG_CARD = "#161B22"
 BG_SIDE = "#1A1F2E"
 
 
-# ==============================================================================
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -50,7 +48,7 @@ class App(ctk.CTk):
 
         self._build_ui()
 
-    # ── Layout ────────────────────────────────────────────────────────────────
+    #layout
     def _build_ui(self):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -178,7 +176,7 @@ class App(ctk.CTk):
         self.pbar.pack(side="right", padx=14, pady=10)
         self.pbar.set(0)
 
-    # ── Helpers ───────────────────────────────────────────────────────────────
+    #Helpers
     def setstatus(self, msg, color="#8B949E"):
         self.status.configure(text=msg, text_color=color)
 
@@ -207,7 +205,7 @@ class App(ctk.CTk):
     def _commit(self, img, msg):
         self.processed_image = img; self.show(img); self.setstatus(msg, SUCCESS)
 
-    # ── File ops ──────────────────────────────────────────────────────────────
+    #File ops
     def open_image(self):
         p = filedialog.askopenfilename(
             filetypes=[("Images","*.png *.jpg *.jpeg *.bmp *.gif *.tiff *.webp"),("All","*.*")])
@@ -259,7 +257,7 @@ class App(ctk.CTk):
     def dlg_watermark(self):
         if self.need(): WatermarkDlg(self)
 
-    # ── Filters ───────────────────────────────────────────────────────────────
+    #Filters 
     def f_grayscale(self):
         if not self.need(): return
         self._commit(self.work().convert("L").convert("RGBA"), "⬛  Grayscale applied")
