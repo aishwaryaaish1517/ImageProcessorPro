@@ -19,7 +19,7 @@ def img_to_b64(img):
     img.save(buf, format="PNG")
     return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
 
-# ── Routes ────────────────────────────────────────────────────────────────────
+# Routes
 @app.route("/")
 def index():
     return render_template("index.html")
