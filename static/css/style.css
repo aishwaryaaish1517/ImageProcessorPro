@@ -1,9 +1,3 @@
-/* =============================================================
-   FILE:     static/css/style.css
-   LOCATION: ImageProcessorPro/static/css/style.css
-   PURPOSE:  Styles for the Flask web interface
-============================================================= */
-
 :root {
   --bg:      #0D1117;
   --card:    #161B22;
