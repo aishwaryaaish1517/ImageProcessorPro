@@ -1,0 +1,257 @@
+/* =============================================================
+   FILE:     static/css/style.css
+   LOCATION: ImageProcessorPro/static/css/style.css
+   PURPOSE:  Styles for the Flask web interface
+============================================================= */
+
+:root {
+  --bg:      #0D1117;
+  --card:    #161B22;
+  --side:    #1A1F2E;
+  --accent:  #00B4D8;
+  --success: #06D6A0;
+  --warn:    #FFD166;
+  --danger:  #EF476F;
+  --muted:   #8B949E;
+  --border:  #21262D;
+  --white:   #E6EDF3;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+aside {
+  width: 235px;
+  background: var(--side);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding-bottom: 24px;
+}
+
+.logo {
+  padding: 22px 16px 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.logo span {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.sec {
+  padding: 18px 14px 5px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .8px;
+}
+
+.tbtn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 14px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--white);
+  font-size: 13px;
+  width: calc(100% - 12px);
+  margin: 1px 6px;
+  text-align: left;
+  border-radius: 7px;
+  transition: background .15s;
+}
+
+.tbtn:hover { background: #21262D; }
+
+/* ── Main panel ── */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.topbar {
+  background: var(--card);
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.topbar h1 { font-size: 14px; font-weight: 600; }
+
+#file-info { font-size: 11px; color: var(--muted); }
+
+/* ── Canvas grid ── */
+.canvas-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.panel {
+  background: var(--card);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.panel-head {
+  padding: 9px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.img-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0e13;
+  overflow: hidden;
+}
+
+.img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+.placeholder {
+  color: #30363D;
+  font-size: 15px;
+  text-align: center;
+  padding: 40px 24px;
+  line-height: 2;
+}
+
+/* ── Drop zone ── */
+#drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s;
+  width: 100%;
+}
+
+#drop-zone:hover, #drop-zone.drag { border-color: var(--accent); }
+#drop-zone .icon { font-size: 44px; }
+#drop-zone p { color: var(--muted); margin-top: 10px; font-size: 13px; line-height: 1.7; }
+
+/* ── Controls bar ── */
+.ctrl-bar {
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.ctrl-bar label { font-size: 12px; color: var(--muted); }
+
+input[type=range] { width: 110px; accent-color: var(--accent); cursor: pointer; }
+
+input[type=text], input[type=number] {
+  background: #21262D;
+  border: 1px solid var(--border);
+  color: var(--white);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+input[type=number] { width: 68px; }
+input[type=text]   { width: 160px; }
+
+/* ── Buttons ── */
+.btn {
+  padding: 7px 16px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: opacity .15s;
+}
+
+.btn:hover { opacity: .82; }
+.btn-accent  { background: var(--accent);  color: #000; }
+.btn-success { background: var(--success); color: #000; }
+.btn-warn    { background: var(--warn);    color: #000; }
+.btn-ghost   { background: #21262D;        color: var(--white); }
+
+/* ── Status bar ── */
+.statusbar {
+  background: #21262D;
+  height: 27px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  font-size: 11px;
+  color: var(--muted);
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+#pbar-wrap {
+  flex: 1;
+  max-width: 180px;
+  height: 4px;
+  background: #30363D;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+#pbar {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width .3s;
+}
+
+/* ── Spinner ── */
+.spin {
+  display: none;
+  width: 16px; height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: rot .7s linear infinite;
+}
+
+@keyframes rot { to { transform: rotate(360deg); } }
+
+@media (max-width: 720px) {
+  aside { display: none; }
+  .canvas-grid { grid-template-columns: 1fr; }
+}

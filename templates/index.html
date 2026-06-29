@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Image Processor Pro — Web</title>
+<style>
+  :root{
+    --bg:#0D1117;--card:#161B22;--side:#1A1F2E;--accent:#00B4D8;
+    --success:#06D6A0;--warn:#FFD166;--danger:#EF476F;--muted:#8B949E;
+    --border:#21262D;--white:#E6EDF3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;
+       display:flex;height:100vh;overflow:hidden}
+
+  /* Sidebar */
+  aside{width:240px;background:var(--side);display:flex;flex-direction:column;
+        overflow-y:auto;flex-shrink:0;padding-bottom:20px}
+  .logo{padding:22px 16px 8px;font-size:15px;font-weight:700;color:var(--accent)}
+  .logo span{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}
+  .section-lbl{padding:18px 16px 6px;font-size:10px;font-weight:700;
+               color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+  .tool-btn{display:flex;align-items:center;gap:10px;padding:9px 16px;
+            cursor:pointer;border:none;background:transparent;color:var(--white);
+            font-size:13px;width:100%;text-align:left;transition:background .15s;border-radius:6px;margin:1px 6px;width:calc(100% - 12px)}
+  .tool-btn:hover{background:#21262D}
+  .tool-btn.active{background:rgba(0,180,216,.15);color:var(--accent)}
+
+  /* Main */
+  main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .topbar{background:var(--card);height:52px;display:flex;align-items:center;
+          padding:0 20px;gap:16px;border-bottom:1px solid var(--border);flex-shrink:0}
+  .topbar h1{font-size:14px;font-weight:600}
+  .file-info{font-size:12px;color:var(--muted)}
+
+  /* Canvas area */
+  .canvas-area{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px;
+               padding:12px;overflow:hidden}
+  .panel{background:var(--card);border-radius:10px;display:flex;
+         flex-direction:column;overflow:hidden;border:1px solid var(--border)}
+  .panel-header{padding:10px 14px;font-size:12px;font-weight:600;color:var(--muted);
+                border-bottom:1px solid var(--border);background:var(--bg)}
+  .img-container{flex:1;display:flex;align-items:center;justify-content:center;
+                 overflow:hidden;background:#0a0e13}
+  .img-container img{max-width:100%;max-height:100%;object-fit:contain}
+  .placeholder{color:#30363D;font-size:16px;text-align:center;padding:40px}
+
+  /* Controls */
+  .controls{background:var(--card);padding:14px 20px;border-top:1px solid var(--border);
+            display:flex;align-items:center;gap:16px;flex-wrap:wrap;flex-shrink:0}
+  .ctrl-group{display:flex;align-items:center;gap:8px}
+  label{font-size:12px;color:var(--muted)}
+  input[type=range]{width:120px;accent-color:var(--accent)}
+  input[type=text],select{background:#21262D;border:1px solid var(--border);
+    color:var(--white);border-radius:6px;padding:5px 10px;font-size:13px}
+  select{cursor:pointer}
+
+  /* Buttons */
+  .btn{padding:7px 16px;border-radius:7px;border:none;cursor:pointer;
+       font-size:13px;font-weight:600;transition:opacity .15s}
+  .btn:hover{opacity:.85}
+  .btn-primary{background:var(--accent);color:#000}
+  .btn-success{background:var(--success);color:#000}
+  .btn-warn{background:var(--warn);color:#000}
+  .btn-danger{background:var(--danger);color:#fff}
+  .btn-ghost{background:#21262D;color:var(--white)}
+
+  /* Upload zone */
+  #upload-zone{border:2px dashed var(--border);border-radius:10px;padding:40px;
+               text-align:center;cursor:pointer;transition:border-color .2s}
+  #upload-zone:hover,#upload-zone.drag{border-color:var(--accent)}
+  #upload-zone p{color:var(--muted);margin-top:10px;font-size:13px}
+
+  /* Status bar */
+  .statusbar{background:#21262D;height:28px;display:flex;align-items:center;
+             padding:0 16px;font-size:11px;color:var(--muted);gap:10px;flex-shrink:0}
+  #progress{flex:1;max-width:200px;height:4px;background:#30363D;border-radius:4px;overflow:hidden}
+  #progress-inner{height:100%;background:var(--accent);width:0%;transition:width .3s}
+
+  /* Spinner */
+  .spinner{display:none;width:18px;height:18px;border:2px solid var(--border);
+           border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* Mobile */
+  @media(max-width:768px){
+    aside{display:none}
+    .canvas-area{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside>
+  <div class="logo">⚡ Image Processor Pro<span>Web Interface v1.0</span></div>
+
+  <div class="section-lbl">📁 File</div>
+  <label class="tool-btn" for="file-input">📂 &nbsp;Open Image</label>
+  <input type="file" id="file-input" accept="image/*" style="display:none">
+  <button class="tool-btn" onclick="downloadResult()">💾 &nbsp;Download Result</button>
+
+  <div class="section-lbl">🎨 Filters</div>
+  <button class="tool-btn" onclick="applyOp('grayscale')">⬛ &nbsp;Grayscale</button>
+  <button class="tool-btn" onclick="applyOp('blur')">🌫️ &nbsp;Blur</button>
+  <button class="tool-btn" onclick="applyOp('sharpen')">🔪 &nbsp;Sharpen</button>
+  <button class="tool-btn" onclick="applyOp('sepia')">🎞️ &nbsp;Sepia Tone</button>
+  <button class="tool-btn" onclick="applyOp('edge')">📏 &nbsp;Edge Detect</button>
+  <button class="tool-btn" onclick="applyOp('emboss')">🏔️ &nbsp;Emboss</button>
+
+  <div class="section-lbl">🔧 Transform</div>
+  <button class="tool-btn" onclick="applyOp('flip_h')">↔️ &nbsp;Flip Horizontal</button>
+  <button class="tool-btn" onclick="applyOp('flip_v')">↕️ &nbsp;Flip Vertical</button>
+  <button class="tool-btn" onclick="applyRotate()">🔃 &nbsp;Rotate</button>
+  <button class="tool-btn" onclick="applyResize()">📐 &nbsp;Resize</button>
+
+  <div class="section-lbl">🤖 AI Features</div>
+  <button class="tool-btn" onclick="applyOp('enhance')">✨ &nbsp;AI Enhance</button>
+  <button class="tool-btn" onclick="applyWatermark()">💧 &nbsp;Add Watermark</button>
+  <button class="tool-btn" onclick="applyBrightness()">☀️ &nbsp;Brightness</button>
+  <button class="tool-btn" onclick="applyContrast()">🔆 &nbsp;Contrast</button>
+</aside>
+
+<!-- Main -->
+<main>
+  <div class="topbar">
+    <h1>🖼️ Image Canvas</h1>
+    <span class="file-info" id="file-info">No image loaded</span>
+  </div>
+
+  <div class="canvas-area">
+    <!-- Original -->
+    <div class="panel">
+      <div class="panel-header">Original Image</div>
+      <div class="img-container" id="original-container">
+        <div id="upload-zone" onclick="document.getElementById('file-input').click()">
+          <div style="font-size:48px">📂</div>
+          <p>Click to open an image<br>or drag & drop here</p>
+        </div>
+        <img id="original-img" style="display:none" alt="Original">
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="panel">
+      <div class="panel-header">Processed Output</div>
+      <div class="img-container" id="output-container">
+        <div class="placeholder" id="output-placeholder">
+          🎨 Apply an operation to see result here
+        </div>
+        <img id="output-img" style="display:none" alt="Processed">
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>Blur Radius:</label>
+      <input type="range" id="blur-radius" min="1" max="20" value="3">
+      <span id="blur-val" style="font-size:12px;color:var(--muted)">3</span>
+    </div>
+    <div class="ctrl-group">
+      <label>Brightness:</label>
+      <input type="range" id="brightness-val" min="10" max="300" value="120">
+      <span id="br-display" style="font-size:12px;color:var(--muted)">1.2×</span>
+    </div>
+    <div class="ctrl-group">
+      <label>Rotate °:</label>
+      <input type="number" id="rotate-angle" value="90" min="0" max="360" style="width:70px">
+    </div>
+    <div class="ctrl-group">
+      <label>Watermark:</label>
+      <input type="text" id="watermark-text" value="© My Name 2024" style="width:160px">
+    </div>
+    <div class="spinner" id="spinner"></div>
+  </div>
+
+  <div class="statusbar">
+    <span id="status">✅ Ready — Open an image to begin</span>
+    <div id="progress"><div id="progress-inner"></div></div>
+    <span id="output-id" style="display:none"></span>
+  </div>
+</main>
+
+<script>
+let imageId=null, imageExt=null;
+
+// ─ Sliders ─
+document.getElementById('blur-radius').addEventListener('input',function(){
+  document.getElementById('blur-val').textContent=this.value;
+});
+document.getElementById('brightness-val').addEventListener('input',function(){
+  document.getElementById('br-display').textContent=(this.value/100).toFixed(1)+'×';
+});
+
+// ─ Upload ─
+const fileInput=document.getElementById('file-input');
+fileInput.addEventListener('change', e=>{if(e.target.files[0]) uploadImage(e.target.files[0])});
+
+// Drag & drop
+const zone=document.getElementById('upload-zone');
+document.body.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag')});
+document.body.addEventListener('dragleave',()=>zone.classList.remove('drag'));
+document.body.addEventListener('drop',e=>{
+  e.preventDefault(); zone.classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f && f.type.startsWith('image/')) uploadImage(f);
+});
+
+function uploadImage(file){
+  setStatus('📂 Uploading…','#FFD166'); showProgress(30);
+  const fd=new FormData();
+  fd.append('image',file);
+  fetch('/upload',{method:'POST',body:fd}).then(r=>r.json()).then(d=>{
+    if(d.error){setStatus('❌ '+d.error,'#EF476F');return}
+    imageId=d.id; imageExt=d.ext;
+    const orig=document.getElementById('original-img');
+    orig.src=d.preview; orig.style.display='block';
+    document.getElementById('upload-zone').style.display='none';
+    document.getElementById('file-info').textContent=`${file.name}  •  ${d.width}×${d.height}px`;
+    // reset output
+    document.getElementById('output-img').style.display='none';
+    document.getElementById('output-placeholder').style.display='block';
+    document.getElementById('output-id').textContent='';
+    setStatus('✅ Image loaded: '+file.name,'#06D6A0');
+    showProgress(100);
+  }).catch(()=>setStatus('❌ Upload failed','#EF476F'));
+}
+
+function applyOp(op, params={}){
+  if(!imageId){setStatus('⚠️ Open an image first','#FFD166');return}
+  setStatus('⚙️ Processing…','#00B4D8'); showProgress(40); showSpinner(true);
+  fetch('/process',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id:imageId, ext:imageExt, operation:op, params})
+  }).then(r=>r.json()).then(d=>{
+    if(d.error){setStatus('❌ '+d.error,'#EF476F');return}
+    const out=document.getElementById('output-img');
+    out.src=d.preview; out.style.display='block';
+    document.getElementById('output-placeholder').style.display='none';
+    document.getElementById('output-id').textContent=d.out_id;
+    setStatus('✅ '+op+' applied successfully','#06D6A0');
+    showProgress(100); showSpinner(false);
+  }).catch(()=>{setStatus('❌ Processing failed','#EF476F');showSpinner(false)});
+}
+
+function applyRotate(){
+  const angle=document.getElementById('rotate-angle').value;
+  applyOp('rotate',{angle:parseFloat(angle)});
+}
+function applyResize(){
+  const w=prompt('New width in pixels:'); if(!w) return;
+  const h=prompt('New height in pixels:'); if(!h) return;
+  applyOp('resize',{width:parseInt(w), height:parseInt(h)});
+}
+function applyWatermark(){
+  const text=document.getElementById('watermark-text').value||'© Watermark';
+  applyOp('watermark',{text});
+}
+function applyBrightness(){
+  const factor=document.getElementById('brightness-val').value/100;
+  applyOp('brightness',{factor});
+}
+function applyContrast(){
+  const factor=document.getElementById('brightness-val').value/100;
+  applyOp('contrast',{factor});
+}
+function downloadResult(){
+  const id=document.getElementById('output-id').textContent;
+  if(!id){setStatus('⚠️ No processed image to download','#FFD166');return}
+  window.location.href='/download/'+id;
+}
+
+function setStatus(msg,color='#8B949E'){
+  const s=document.getElementById('status');
+  s.textContent=msg; s.style.color=color;
+}
+function showProgress(pct){
+  document.getElementById('progress-inner').style.width=pct+'%';
+}
+function showSpinner(show){
+  document.getElementById('spinner').style.display=show?'block':'none';
+}
+</script>
+</body>
+</html>
