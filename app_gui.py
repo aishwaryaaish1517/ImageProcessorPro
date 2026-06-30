@@ -1,7 +1,16 @@
+"""
+=============================================================
+  FILE: app_gui.py
+  LOCATION: ImageProcessorPro/app_gui.py
+  PURPOSE: Main Desktop GUI Application
+  RUN WITH: python app_gui.py
+=============================================================
+"""
+
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 import tkinter as tk
-from PIL import Image, ImageFilter, ImageEnhance, ImageDraw, ImageFont
+from PIL import Image, ImageFilter, ImageEnhance, ImageDraw, ImageFont, ImageTk
 import cv2
 import numpy as np
 import os
@@ -187,11 +196,15 @@ class App(ctk.CTk):
 
     def show(self, img):
         self.canvas.delete("all")
-        cw = self.canvas.winfo_width()  or 800
-        ch = self.canvas.winfo_height() or 520
-        tmp = img.copy(); tmp.thumbnail((cw-20, ch-20), Image.LANCZOS)
-        self._tkimg = ctk.CTkImage(light_image=tmp, dark_image=tmp, size=tmp.size)
-        self.canvas.create_image(cw//2, ch//2, image=self._tkimg, anchor="center")
+        self.canvas.update_idletasks()  # force canvas to compute real size first
+        cw = self.canvas.winfo_width()
+        ch = self.canvas.winfo_height()
+        if cw < 10 or ch < 10:   # canvas not ready yet -> use safe fallback size
+            cw, ch = 900, 550
+        tmp = img.copy()
+        tmp.thumbnail((cw - 20, ch - 20), Image.LANCZOS)
+        self._tkimg = ImageTk.PhotoImage(tmp)
+        self.canvas.create_image(cw // 2, ch // 2, image=self._tkimg, anchor="center")
         w, h = img.size
         self.info_lbl.configure(
             text=f"  {w} × {h} px  |  {img.mode}  |  {os.path.basename(self.image_path or 'unsaved')}")
@@ -215,7 +228,7 @@ class App(ctk.CTk):
         self.image_path = p
         self.original_image = Image.open(p).convert("RGBA")
         self.processed_image = None
-        self.show(self.original_image)
+        self.after(50, lambda: self.show(self.original_image))
         self.setstatus(f"✅  Loaded: {os.path.basename(p)}", SUCCESS)
 
     def save_image(self):
@@ -579,3 +592,4 @@ class BatchWin(BaseDlg):
 # ==============================================================================
 if __name__ == "__main__":
     App().mainloop()
+    
