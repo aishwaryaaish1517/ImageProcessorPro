@@ -1,12 +1,3 @@
-"""
-=============================================================
-  FILE: app_gui.py
-  LOCATION: ImageProcessorPro/app_gui.py
-  PURPOSE: Main Desktop GUI Application
-  RUN WITH: python app_gui.py
-=============================================================
-"""
-
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 import tkinter as tk
