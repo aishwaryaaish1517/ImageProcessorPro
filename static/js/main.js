@@ -1,9 +1,3 @@
-/* =============================================================
-   FILE:     static/js/main.js
-   LOCATION: ImageProcessorPro/static/js/main.js
-   PURPOSE:  JavaScript logic for the Flask web interface
-============================================================= */
-
 let imgId = null, imgExt = null;
 
 // ── Slider labels ──────────────────────────────────────────────────────────

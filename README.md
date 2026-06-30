@@ -2,20 +2,6 @@
 
 A professional image processing application with Desktop GUI and Web Interface.
 
----
-
-## 👨‍💻 Intern Details
-
-| Field        | Info                  |
-|--------------|-----------------------|
-| Intern ID    | YOUR_INTERN_ID        |
-| Full Name    | YOUR_FULL_NAME        |
-| No. of Weeks | YOUR_WEEKS            |
-| Project Name | Image Processor Pro   |
-| Project Scope| Desktop GUI + Web App |
-
----
-
 ## ✨ Features
 - Resize, Crop, Rotate, Flip images
 - Apply Filters: Grayscale, Blur, Sharpen, Sepia, Edge, Emboss
@@ -29,7 +15,7 @@ A professional image processing application with Desktop GUI and Web Interface.
 - Batch Processing (multiple images at once)
 - Web Interface (Flask)
 
----
+
 
 ## 🚀 How to Run
 
@@ -45,7 +31,6 @@ python app_web.py
 # Then open: http://localhost:5000
 ```
 
----
 
 ## 📁 Project Structure
 
